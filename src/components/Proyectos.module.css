@@ -1,0 +1,14 @@
+.seccionProyectos {
+  padding: 4rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  scroll-margin-top: 6rem;
+}
+
+.grilla {
+  display: grid;
+  /* Esto crea columnas automáticas que se adaptan al ancho de la pantalla */
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem; /* Espacio exacto entre tarjeta y tarjeta */
+  margin-top: 2rem;
+}
