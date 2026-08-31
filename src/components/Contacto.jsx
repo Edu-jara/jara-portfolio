@@ -1,6 +1,5 @@
 import React from 'react';
 import { Mail, PhoneCall, MapPin, ShieldCheck, Sparkles } from 'lucide-react';
-import fotoPerfil from '../assets/perfil1.webp';
 
 export default function Contacto() {
     return (
@@ -37,7 +36,7 @@ export default function Contacto() {
                             <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-tr from-cyan-500 to-emerald-500 p-[2px] shadow-lg shrink-0 overflow-hidden flex items-center justify-center">
                                 <div className="w-full h-full rounded-[14px] overflow-hidden bg-neutral-900">
                                     <img
-                                        src={fotoPerfil}
+                                        src="/perfil1.webp"
                                         alt="Eduardo"
                                         className="w-full h-full object-cover object-center"
                                         style={{ minWidth: '100%', minHeight: '100%' }}
