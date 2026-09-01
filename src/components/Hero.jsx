@@ -8,15 +8,13 @@ export default function Hero() {
 
     return (
         /* 1. La section ocupa el 100% del ancho de la pantalla y tiene la imagen de fondo */
-        <section className="relative w-full h-[90vh] flex flex-col justify-center bg-neutral-950 overflow-hidden">
+        <section className="relative w-full h-[90vh] flex flex-col justify-center bg-neutral-950">
 
             {/* 1. Subimos la opacidad a 80 y cambiamos el modo de fusión a 'normal' o 'lighten' para que no quede apagada */}
             <div
                 className="absolute inset-0 z-0 opacity-100 bg-cover bg-center bg-no-repeat pointer-events-none"
                 style={{ backgroundImage: `url(${backgroundTech})` }}
-            >
-
-            </div>
+            ></div>
 
             {/* Gradiente sutil para oscurecer y que el texto resalte legible */}
             {/* Gradiente dinámico: más oscuro solo a la izquierda para el texto, y transparente a la derecha */}
