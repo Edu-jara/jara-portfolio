@@ -16,8 +16,7 @@ export default function App() {
       <Servicios />
       <div className="max-w-5xl mx-auto px-6 py-12 w-full">
 
-        {/* ACÁ es donde le decimos que dibuje el componente Hero */}
-
+        
         <Proyectos />
         <Contacto/>
       </div>

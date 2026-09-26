@@ -3,7 +3,7 @@ import TarjetaProyecto from './TarjetaProyecto';
 import styles from './Proyectos.module.css'; // Si usás CSS Module para la sección
 import imagenDemo1 from '../assets/demo1.jpg';
 import imagenDemo2 from '../assets/demo2.jpg';
-import imagenProximamente from '../assets/demo3.jpg';
+import imagenDemo3 from '../assets/demo3.jpg';
 
 const Proyectos = () => {
     // 1. ACÁ ARMÁS EL ARRAY CON TUS DATOS
@@ -24,10 +24,10 @@ const Proyectos = () => {
         },
         {
             id: 3,
-            titulo: "E-Commerce (Próximamente)",
-            descripcion: "Tienda online interactiva con carrito de compras en desarrollo.",
-            imagen: imagenProximamente,
-            link: "#" // O vació porque todavía se está haciendo
+            titulo: "E-Commerce",
+            descripcion: "Tienda online interactiva con carrito de compras.",
+            imagen: imagenDemo3,
+            link: "https://react-burger-five-wine.vercel.app/#hamburgueseria" 
         }
     ];
 
