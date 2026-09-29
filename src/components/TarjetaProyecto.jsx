@@ -9,14 +9,10 @@ const TarjetaProyecto = ({ titulo, descripcion, imagen, link }) => {
                 <h3 className={styles.titulo}>{titulo}</h3>
                 <p className={styles.descripcion}>{descripcion}</p>
 
-                {/* Si el link es '#' (el del próximamente), podemos cambiar el comportamiento o el texto */}
-                {link !== '#' ? (
-                    <a href={link} target="_blank" rel="noopener noreferrer" className={styles.boton}>
-                        Ver Proyecto
-                    </a>
-                ) : (
-                    <span className={styles.proximamente}>Próximamente</span>
-                )}
+                {/* Botón directo a los demos */}
+                <a href={link} target="_blank" rel="noopener noreferrer" className={styles.boton}>
+                    Ver Proyecto
+                </a>
             </div>
         </div>
     );

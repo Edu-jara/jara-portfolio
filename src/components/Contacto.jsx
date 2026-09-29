@@ -1,8 +1,18 @@
 import React, { useState } from 'react';
 import { Mail, PhoneCall, MapPin, ShieldCheck, Sparkles, Send } from 'lucide-react';
+import emailjs from '@emailjs/browser';
+
+// Lectura de credenciales desde las variables de entorno de Vite (.env)
+const SITE_CONFIG = {
+    emailjs: {
+        serviceId: import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        templateId: import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+    }
+};
 
 export default function Contacto() {
-    // 1. Estados adentro del componente
+    // 1. Estados
     const [formData, setFormData] = useState({
         nombre: '',
         email: '',
@@ -14,7 +24,7 @@ export default function Contacto() {
     const [enviando, setEnviando] = useState(false);
     const [estadoEnvio, setEstadoEnvio] = useState(null); // 'exito' | 'error' | null
 
-    // 2. Manejador de cambios en los inputs
+    // 2. Manejador de cambios en los campos
     const manejarCambio = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -23,39 +33,59 @@ export default function Contacto() {
         }));
     };
 
-    // 3. Envío del formulario (Abre WhatsApp con los datos formateados)
-    const manejarEnvio = (e) => {
+    // 3. Envío de formulario con EmailJS
+    const manejarEnvio = async (e) => {
         e.preventDefault();
+
+        const { emailjs: emailConfig } = SITE_CONFIG;
+
+        // Validación defensiva para verificar que existan las credenciales
+        if (!emailConfig.serviceId || !emailConfig.templateId || !emailConfig.publicKey) {
+            console.error('Error: Faltan configurar las variables de entorno de EmailJS en el archivo .env');
+            setEstadoEnvio('error');
+            return;
+        }
+
         setEnviando(true);
+        setEstadoEnvio(null);
+
+        const tiposNombres = {
+            landing: 'Landing Page (1 sola página)',
+            corporativo: 'Sitio Corporativo (Multi-página)',
+            sistema: 'Sistema a Medida / App Web',
+            asesoramiento: 'No está seguro / Asesoramiento'
+        };
 
         try {
-            // Mapeo de valores de selección a texto legible
-            const tiposNombres = {
-                landing: 'Landing Page (1 sola página)',
-                corporativo: 'Sitio Corporativo (Multi-página)',
-                sistema: 'Sistema a Medida / App Web',
-                asesoramiento: 'Asesoramiento / No está seguro'
-            };
+            await emailjs.send(
+                emailConfig.serviceId,
+                emailConfig.templateId,
+                {
+                    from_name: formData.nombre,
+                    from_email: formData.email,
+                    phone: formData.telefono,
+                    project_type: tiposNombres[formData.tipoProyecto],
+                    message: formData.mensaje,
+                },
+                emailConfig.publicKey
+            );
 
-            const textoWhatsApp = `*Nueva consulta desde el Portfolio web*%0A%0A` +
-                `👤 *Nombre:* ${encodeURIComponent(formData.nombre)}%0A` +
-                `✉️ *Email:* ${encodeURIComponent(formData.email)}%0A` +
-                `📱 *Teléfono:* ${encodeURIComponent(formData.telefono)}%0A` +
-                `💻 *Tipo de Web:* ${encodeURIComponent(tiposNombres[formData.tipoProyecto])}%0A` +
-                `📝 *Idea/Mensaje:* ${encodeURIComponent(formData.mensaje)}`;
+            setEstadoEnvio('exito');
 
-            // Número de WhatsApp configurado
-            const urlWhatsApp = `https://wa.me/5492215340285?text=${textoWhatsApp}`;
-
-            setTimeout(() => {
-                setEnviando(false);
-                setEstadoEnvio('exito');
-                window.open(urlWhatsApp, '_blank');
-            }, 600);
+            // Limpieza del formulario
+            setFormData({
+                nombre: '',
+                email: '',
+                telefono: '',
+                tipoProyecto: 'landing',
+                mensaje: ''
+            });
 
         } catch (error) {
-            setEnviando(false);
+            console.error('Error al enviar el correo con EmailJS:', error);
             setEstadoEnvio('error');
+        } finally {
+            setEnviando(false);
         }
     };
 
@@ -80,15 +110,15 @@ export default function Contacto() {
                     </p>
                 </div>
 
-                {/* Grid principal: Perfil a la izquierda y Formulario a la derecha en escritorios */}
+                {/* Grid principal */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-                    {/* Columna Izquierda: Perfil y Canales rápidos (5 cols) */}
+                    {/* Columna Izquierda: Perfil y Canales rápidos */}
                     <div className="lg:col-span-5 space-y-6">
-                        
+
                         {/* Tarjeta de Perfil */}
                         <div className="bg-gradient-to-b from-neutral-900/90 to-neutral-950/90 border border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl space-y-6">
-                            
+
                             <div className="flex items-center gap-4">
                                 <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-cyan-500 to-emerald-500 p-[2px] shadow-lg shrink-0 overflow-hidden flex items-center justify-center">
                                     <div className="w-full h-full rounded-[14px] overflow-hidden bg-neutral-900">
@@ -159,7 +189,7 @@ export default function Contacto() {
 
                     </div>
 
-                    {/* Columna Derecha: Formulario Guiado (7 cols) */}
+                    {/* Columna Derecha: Formulario */}
                     <div className="lg:col-span-7 bg-neutral-900/80 p-6 md:p-8 rounded-3xl border border-neutral-800/80 backdrop-blur-xl shadow-2xl">
                         <form onSubmit={manejarEnvio} className="space-y-4">
                             <h3 className="text-xl font-bold text-white mb-2 border-b border-neutral-800 pb-3 flex items-center gap-2">
@@ -175,7 +205,7 @@ export default function Contacto() {
                                     required
                                     value={formData.nombre}
                                     onChange={manejarCambio}
-                                    placeholder="Ej. Valeria Gómez"
+                                    placeholder="Ej. Felipe Claro"
                                     className="w-full bg-neutral-950 border border-neutral-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-emerald-500 transition-all"
                                 />
                             </div>
@@ -190,7 +220,7 @@ export default function Contacto() {
                                         required
                                         value={formData.email}
                                         onChange={manejarCambio}
-                                        placeholder="valeria@ejemplo.com"
+                                        placeholder="Felipejara@ejemplo.com"
                                         className="w-full bg-neutral-950 border border-neutral-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-emerald-500 transition-all"
                                     />
                                 </div>
@@ -224,7 +254,7 @@ export default function Contacto() {
                                 </select>
                             </div>
 
-                            {/* Mensaje guiado */}
+                            {/* Mensaje */}
                             <div className="space-y-1">
                                 <label className="text-xs font-medium text-neutral-300">Contanos sobre tu negocio o idea *</label>
                                 <textarea
@@ -233,7 +263,7 @@ export default function Contacto() {
                                     rows={4}
                                     value={formData.mensaje}
                                     onChange={manejarCambio}
-                                    placeholder="Ej: Tengo una distribuidora de vinos y quiero mostrar nuestro catálogo para que los clientes nos hagan pedidos directo por WhatsApp..."
+                                    placeholder="Ej: Tengo una distribuidora de vinos y quiero mostrar nuestro catálogo para que los clientes nos hagan pedidos directo..."
                                     className="w-full bg-neutral-950 border border-neutral-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-emerald-500 transition-all"
                                 ></textarea>
                             </div>
@@ -247,17 +277,21 @@ export default function Contacto() {
                                     transition-all duration-300 ease-in-out hover:scale-[1.01] active:scale-95 
                                     disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm shadow-lg cursor-pointer"
                                 >
-                                    {enviando ? <span>Enviando consulta...</span> : <span className="flex items-center gap-2">Enviar cotización de proyecto <Send className="w-4 h-4" /></span>}
+                                    {enviando ? (
+                                        <span>Enviando consulta...</span>
+                                    ) : (
+                                        <span className="flex items-center gap-2">Enviar cotización de proyecto <Send className="w-4 h-4" /></span>
+                                    )}
                                 </button>
 
                                 {estadoEnvio === 'exito' && (
                                     <p className="text-xs text-emerald-400 text-center font-medium pt-3">
-                                        ¡Consulta lista! Se abrió WhatsApp para enviar el mensaje directo.
+                                        ¡Mensaje enviado con éxito! Te responderé a la brevedad.
                                     </p>
                                 )}
                                 {estadoEnvio === 'error' && (
                                     <p className="text-xs text-red-400 text-center font-medium pt-3">
-                                        Hubo un problema al procesar. Escribime directamente por WhatsApp.
+                                        Hubo un problema al enviar. Escribime directamente por WhatsApp.
                                     </p>
                                 )}
                             </div>
